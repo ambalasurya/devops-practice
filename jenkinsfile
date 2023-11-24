@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+    tools {
+        maven 'Maven-3.9.5'
+    }
+
+    stages {
+        stage('git clone') {
+            steps {
+                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/ambalasurya/devops_practice.git'
+            }
+        }
+
+        stage('maven build') {
+            steps {
+                script {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+
+        stage('code review') {
+            steps {
+                script {
+                    withSonarQubeEnv ('Sonar-Server-7.8') {
+                        sh 'mvn sonar:sonar'
+                    }
+                }
+            }
+        }
+    }
+}
+       
